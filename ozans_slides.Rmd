@@ -1,0 +1,67 @@
+---
+title: "my_fancy_presentation"
+author: "Yigit Ozan Berk"
+date: "10/3/2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## My new slide
+
+some content
+
+***
+A slide without a title
+
+## My title
+
+### A top level subheading
+#### Second level subheading
+
+## My title 2
+- Bullet 1
+- Bullet 2
+
+1. item 1
+2. item 2
+3. plot of regression of mpg onto weight
+```{r}
+library(ggplot2)
+qplot(x = wt, y = mpg, data = mtcars) + geom_smooth(method = "lm")
+```
+
+## my new slide 3
+
+Plain text
+
+*italicized text*
+
+**Bold text**
+`for (i %in% 1:10)`
+
+```{r}
+head(mtcars)
+```
+
+## my new slide 4
+
+- to get rid of the # comment characters, use comment = ""
+- you can use anything including nothing
+- echo = TRUE shows the code as well
+
+```{r, comment = "", echo = T}
+head(mtcars)
+```
+
+## my new slide 5
+
+- there are a lot of options in code chunks.
+
+
+```{r}
+
+```
+
