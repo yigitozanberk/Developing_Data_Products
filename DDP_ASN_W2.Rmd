@@ -1,0 +1,29 @@
+---
+title: "DDP_asgn1"
+author: "Yigit Ozan Berk"
+date: "10/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 4 October 2019
+
+The islands I would like to sail to
+
+```{r, echo = FALSE, message = FALSE}
+library(leaflet)
+myis = data.frame(lat = c(10.536421, 13.06667 ),
+                  lng = c(-61.311951,-59.65 ),
+                  name = c("Trinidad and Tobago","Barbados" )
+                  ) 
+islandsites = c("<a href='https://www.lonelyplanet.com/trinidad-and-tobago'>Trinidad and Tobago</a>",
+                "<a href='https://www.lonelyplanet.com/barbados'>Barbados</a>")
+
+myis%>%
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(popup = islandsites)
+```

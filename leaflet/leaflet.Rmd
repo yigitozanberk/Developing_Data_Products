@@ -13,7 +13,7 @@ Javascript!
 
 ### Installation
 
-```r
+```{r}
 install.packages("leaflet")
 ```
 
@@ -159,7 +159,7 @@ hopkinsSites <- c(
 hopkinsLatLong %>% 
   leaflet() %>%
   addTiles() %>%
-  addMarkers(icon = hopkinsIcon, popup = hopkinsSites)
+  addMarkers(popup = hopkinsSites)
 ```
 
 ## Adding Multiple Popups
@@ -251,6 +251,7 @@ md_cities %>%
   leaflet() %>%
   addTiles() %>%
   addCircles(weight = 1, radius = sqrt(md_cities$pop) * 30)
+
 ```
 
 ## Drawing Circles
@@ -266,6 +267,8 @@ md_cities %>%
   leaflet() %>%
   addTiles() %>%
   addCircles(weight = 1, radius = sqrt(md_cities$pop) * 30)
+#radius will be scaled by the population of the city. then it will be useful
+#weight increases outline of the circle
 ```
 
 ## Drawing Rectangles
@@ -325,3 +328,23 @@ df %>%
 
 For more details about the leaflet package for R 
 visit http://rstudio.github.io/leaflet/.
+
+
+## Assignment
+
+The islands I would like to sail to
+
+```{r}
+myis = data.frame(lat = c(10.536421, 13.06667 ),
+                  lng = c(-61.311951,-59.65 ),
+                  name = c("Trinidad and Tobago","Barbados" )
+                  ) 
+islandsites = c("<a href='https://www.lonelyplanet.com/trinidad-and-tobago'>Trinidad and Tobago</a>",
+                "<a href='https://www.lonelyplanet.com/barbados'>Barbados</a>")
+
+myis%>%
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(popup = islandsites)
+```
+

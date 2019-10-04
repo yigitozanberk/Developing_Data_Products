@@ -61,7 +61,14 @@ head(mtcars)
 - there are a lot of options in code chunks.
 
 
-```{r}
-
+```{r, echo = F, fig.align='center', fig.cap="my Awesome figure"}
+#echo = F to hide the code
+plot(mtcars$wt, mtcars$mpg, xlab = "Weight", ylab = "MPG")
 ```
+
+## my new slide 6
+
+seankross.github.io/slides/Developing_Data_Products/R_Markdown/R_Markdown.html
+
+if you go to this page, the slide will be hosted by github. 
 
