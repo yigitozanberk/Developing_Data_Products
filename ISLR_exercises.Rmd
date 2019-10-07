@@ -1,0 +1,24 @@
+---
+title: "ISLR_1"
+author: "Yigit Ozan Berk"
+date: "10/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Linear Regression
+
+```{r}
+library(MASS)
+library(ISLR)
+
+```
+
+```{r}
+lm.fit5 = lm(medv ~ poly(lstat, 5), data = Boston)
+summary(lm.fit5)
+```
+

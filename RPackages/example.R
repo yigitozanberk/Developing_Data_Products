@@ -14,6 +14,7 @@
 #' @seealso \code{lm}
 #' @import stats
 #' @export
+#' @importFrom stats lm
 
 topten <- function(x, y) {
         p <- ncol(x)
@@ -26,6 +27,7 @@ topten <- function(x, y) {
                 pvalues[i] <- summ$coefficients[2, 4]
         }
         ord <- order(pvalues)
+        ord <- ord[1:10]
         x10 <- x[, ord]
         fit <- lm(y ~ x10)
         coef(fit)
@@ -40,8 +42,12 @@ topten <- function(x, y) {
 #' @param X a n x 10 matrix containing n observations
 #' @param b a vector of coefficients obtained from the \code{topten} function
 #' @return a numeric vector containing the predicted values
+#' @export
 
 predict10 <- function(X, b) {
         X <- cbind(1, X)
+        #intercept
         drop(X %*% b)
+        #drop a dimension after matrix multiplication, so it gives a vector
 }
+

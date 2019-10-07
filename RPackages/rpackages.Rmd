@@ -318,3 +318,4 @@ system("R CMD check newpackage")
 - Write a NAMESPACE file with exports/imports
 - Build and check
 
+## Roxygen2 package creates auto documents from text inside the main r script
