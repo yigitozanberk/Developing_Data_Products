@@ -22,3 +22,31 @@ lm.fit5 = lm(medv ~ poly(lstat, 5), data = Boston)
 summary(lm.fit5)
 ```
 
+### Question 3.15
+
+```{r}
+library(ISLR)
+library(MASS)
+x = data.frame(names = "names", values = 1)
+for(i in 2:dim(Boston)[2]) {
+        fit = lm(crim ~ Boston[, i], data = Boston)
+        print(paste("Univariate Regression of crim onto ", colnames(Boston)[i]))
+        print(summary(fit))
+        x[c(i-1),1] = colnames(Boston)[i]
+        x[c(i-1),2] = summary(fit)$coefficients[2,1]
+}
+```
+
+```{r}
+fit2 = lm(crim ~., data = Boston)
+summary(fit2)
+```
+
+```{r}
+for(i in 2:dim(Boston)[2]) {
+        fit = lm(crim ~ Boston[, i] + I(Boston[, i]^2) + I(Boston[, i]^3), data = Boston)
+        print(paste("Univariate Regression of crim onto ", colnames(Boston)[i]))
+        print(summary(fit))
+}
+```
+

@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/536638/04cf808ccc324ee8a5f7566eafedfa15
+bundleId: https://api.rpubs.com/api/v1/document/536638/04cf808ccc324ee8a5f7566eafedfa15
+url: http://rpubs.com/yoberk/536638
+when: 1570471858.16281

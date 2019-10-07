@@ -15,7 +15,7 @@ they go on to use R for thier own creative purposes.
 
 If you've never used swirl before you shoud try swirl out for yourself:
 
-```r
+```{r}
 install.packages("swirl")
 library(swirl)
 swirl()
@@ -63,7 +63,7 @@ be prompted with.
 
 First install swirlify:
 
-```r
+```{r}
 install.packages("swirlify")
 library(swirlify)
 ```
@@ -71,7 +71,7 @@ library(swirlify)
 Then set your working directory to wherever you want to create your course and
 start the Shiny lesson authoring app:
 
-```r
+```{r}
 setwd(file.path("~", "Desktop"))
 swirlify("Lesson 1", "My First Course")
 ```
@@ -94,7 +94,7 @@ To start a new lesson from the R console set your working directory to where
 you want to create the course, and then use the `new_lesson()` function to
 create the course:
 
-```r
+```{r}
 setwd("/Users/sean/")
 new_lesson("My First Lesson", "My First Course")
 ```
@@ -104,7 +104,7 @@ new_lesson("My First Lesson", "My First Course")
 The `new_lesson()` function will create a file and folder structure like this
 in your working directory:
 
-```r
+```{r}
 My_New_Course
 - My_First_Lesson
     - lesson.yaml
@@ -136,6 +136,20 @@ To review, the `new_lesson()` function did the following:
 If everything is set up correctly then `new_lesson()` should have opened up the
 new `lesson.yaml` file in a text editor. You can now start adding questions to
 the `lesson.yaml` by using functions that start with `wq_` (write question).
+
+```{r}
+wq_message()
+#basic message tab
+wq_command()
+#input tab
+add_to_manifest()
+#adds lesson to manifest. use this to add your lessons one after another 
+test_lesson()
+#if you don't get any warnings and messages, it passes the format tests and checks
+demo_lesson()
+#quick lesson demo
+```
+
 
 ## Writing Lessons: Types of Questions
 
@@ -232,6 +246,32 @@ The student will see the following in the R console:
 | Add 2 and 2 together using the addition operator.
 
 >
+```
+
+
+```{r}
+get_current_lesson()
+#to check where you are atm.
+```
+
+```{r}
+new_lesson("Lesson 2", "My First Course")
+#start the second lesson in the same course.
+wq_multiple()
+add_to_manifest()
+#add to manifest
+demo_lesson()
+
+wq_figure()
+#includes a figure.R in the directory which the question will use to generate the graph
+demo_lesson()
+
+wq_figure()
+#the type is now 'add' 
+#there are only 2 types. 'new' and 'add'
+demo_lesson()
+
+
 ```
 
 ## Multiple Choice Questions

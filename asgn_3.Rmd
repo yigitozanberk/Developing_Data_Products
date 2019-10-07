@@ -1,0 +1,29 @@
+---
+title: "Assignment 3"
+author: "Yigit Ozan Berk"
+date: "7 October 2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Description
+
+This presentation shows the miles per gallon fuel consumption change in cars by the weights of the cars.
+
+```{r}
+library(plotly)
+```
+
+
+## Slide with Plot
+
+```{r, warning = FALSE, message= FALSE}
+
+plot_ly(mtcars, x = ~wt, y = ~mpg, type = "scatter", 
+        text = ~paste("Cylinder: ", cyl, '<br>Hp:', hp),
+        color = ~factor(cyl), size = ~hp)
+```
+
