@@ -1,0 +1,62 @@
+---
+title: "Developing Data Products Shiny App Assignment"
+author: "Yigit Ozan Berk"
+date: "10/8/2019"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r initiation, message = FALSE, warning= FALSE, echo = FALSE}
+library(ISLR)
+```
+
+## Introduction
+
+- This app uses the Credit data set from ISLR package. 
+- It analyzes the relationships between Income and other predictors. 
+- It presents an input button for "student" variable indicator, and two sliders
+for "balance" and "rating" variable inputs for prediction.
+- It plots the residuals of the regression model of 
+formula = Income ~ Rating*Balance + Student
+
+
+## Exploratory Analysis
+
+The model is selected from the analysis of predictors in the Credit dataset.
+```{r pairs, echo = TRUE}
+pairs(Credit)
+```
+
+## Selecting Predictors
+
+The model begins with the most significant predictors, 'StudentYes', 'Balance' and 'Limit'. Upon further examination, because 'Rating' and 'Limit' is very highly correlated with a value of `r cor(Credit$Limit, Credit$Rating)` , 'Rating' predictor is used instead of 'Limit' because it makes more sense.
+```{r pressure}
+summary(lm(Income ~. -ID, data = Credit))
+```
+
+
+## Anova
+
+Upon further examination of the variance, the 'Cards' predictor is not used because of unnecessary variance inflation, together with low F statistic.
+```{r}
+fit1 = lm(Income ~ Rating*Balance + Student, data = Credit)
+fit2 = lm(Income ~ Rating*Balance + Student + Cards, data = Credit)
+anova(fit1, fit2)
+```
+
+
+
+## Conclusion
+
+- Using multivariate regression with the following formula 
+
+```{r}
+fit1
+```
+the user can get a good idea of the value of income of a person(student or non-student) given his rating and balance values.
+
+- The app offers two sliders and an input button to prepare the model prediction value. 
+- The app calculates and displays the prediction value after the values are submitted to the server by the submit button.
