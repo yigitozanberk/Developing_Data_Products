@@ -5,6 +5,8 @@ account: yoberk
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1307772
-bundleId: 2484943
+bundleId: 2496216
 url: https://yoberk.shinyapps.io/ddp_final/
-when: 1570646786.86152
+when: 1570967452.88707
+asMultiple: FALSE
+asStatic: FALSE

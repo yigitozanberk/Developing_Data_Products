@@ -62,13 +62,12 @@ shinyServer(function(input, output) {
         str6 <- ""
         str7 <- "Output: Predicted Income level of the person based on unput values"
         str8 <- ""
-        str9 <- "ui.R code: https://github.com/douglas-thoms/Coursera/blob/master/Johns.Hopkins.Data.Science.Specialization/Data.Products/Assignment.4/ui.R"
+        str9 <- "ui.R code: https://github.com/yigitozanberk/Developing_Data_Products/blob/master/DDP_Final/ui.R"
         str10 <- ""
-        str11 <- "ui.R code: https://github.com/douglas-thoms/Coursera/blob/master/Johns.Hopkins.Data.Science.Specialization/Data.Products/Assignment.4/server.R"
+        str11 <- "server.R code: https://github.com/yigitozanberk/Developing_Data_Products/blob/master/DDP_Final/server.R"
         str12 <- ""
-        str13 <- "Server calculation:  population % with education level = (population with education/Total Population)*100"
         HTML(paste(str1, str2, str3, str4, str5, str6, str7, str8, str9, str10, str11, 
-                   str12, str13, sep = '<br/>'))
+                   str12, sep = '<br/>'))
     })
 
 })
