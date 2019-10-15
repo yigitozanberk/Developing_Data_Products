@@ -279,3 +279,208 @@ var(standardized.X[, 1])
 ```
  
  Now every column of standardized.X has a standard deviation of 1 and a mean of 0.
+ 
+ 
+ We split the observations into a test set, containing the first 1,000 observations, and a training set, containing the remaining observations.
+ 
+```{r}
+test = 1:1000
+train.X = standardized.X[-test,]
+test.X = standardized.X[test,]
+train.Y = Caravan$Purchase[-test]
+test.Y = Caravan$Purchase[test]
+set.seed(1)
+knn.pred = knn(train.X, test.X, train.Y, k = 1)
+#knn model with k = 1
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+```
+ 
+since only 6% of the customers purchased insurance, we would get the error rate down to 6% by always predicting No regardless of the values of the predictors!
+
+But,
+the overall error rate is not of interest in this case, but the fraction of individuals that are correctly predicted to buy insurance is of interest
+
+```{r}
+table(knn.pred, test.Y)
+```
+
+```{r}
+9/(9 + 68)
+```
+
+It turns out that KNN with K = 1 does far better than random guessing among the customers that are predicted to buy insurance. Among 77 such customers, 11.7% actually do purchase insurance. This is double the rate that one would obtain from random guessing.
+
+
+Using K = 3, the success rate increases to 19%, using K= 5 the rate is 26.7% !
+
+It appears that KNN is finding some real patterns in a difficult data set!
+
+```{r}
+knn.pred = knn(train.X, test.X, train.Y, k = 3)
+#knn model with k = 1
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+table(knn.pred, test.Y)
+
+knn.pred = knn(train.X, test.X, train.Y, k = 5)
+#knn model with k = 1
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+table(knn.pred, test.Y)
+
+knn.pred = knn(train.X, test.X, train.Y, k = 6)
+#knn model with k = 1
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+table(knn.pred, test.Y)
+
+knn.pred = knn(train.X, test.X, train.Y, k = 6)
+#knn model with k = 1
+mean(test.Y != knn.pred)
+mean(test.Y != "No")
+table(knn.pred, test.Y)
+```
+
+
+As a comparison, we can also fit a logistic regression model to the data. If we use 0.5 as the predicted probability cut-off for the classifier, then we have a problem: only seven of the test observations are predicted to purchase insurance. 
+
+However, we are not required to use a cut-off of 0.5. If we instead predict a purchase any time the predicted probability of purchase exceeds 0.25, we get much better results: we predict that 33 people will purchase insurance, and we are correct for about 33% of these people. This is over five times better than random guessing!
+
+```{r}
+glm.fits = glm(Purchase ~., data = Caravan, family = binomial, subset = -test)
+glm.probs = predict(glm.fits, Caravan[test, ], type = "response")
+glm.pred = rep("No", 1000)
+glm.pred[glm.probs>.5]="Yes"
+table(glm.pred, test.Y)
+glm.pred = rep("No", 1000)
+glm.pred[glm.probs>.25] = "Yes"
+table(glm.pred, test.Y)
+11/(22+11)
+```
+
+
+## Applied Exercises
+
+### 10
+
+```{r}
+library(ISLR)
+attach(Weekly)
+```
+
+a.
+```{r}
+library(dplyr)
+cor(Weekly[, -9])
+```
+
+```{r}
+library(ggplot2)
+qplot(y = Volume, data  = Weekly, color = as.factor(Year))
+```
+
+```{r}
+p <- ggplot(Weekly, aes(x=as.factor(Year), y=Volume)) + 
+  geom_violin()
+p
+```
+
+It seems the variance of Volume of weekly returns increases each year. 
+
+```{r}
+Weekly %>% group_by(Year) %>% summarise(mean_vol = mean(Volume), q_vol0 = quantile(Volume)[1], q_vol25 = quantile(Volume)[2], q_vol50 = quantile(Volume)[3], q_vol75 = quantile(Volume)[4], q_vol100 = quantile(Volume)[5])
+```
+
+b. 
+```{r}
+fit.log = glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Weekly, family = binomial)
+summary(fit.log)
+```
+
+c.
+```{r}
+log.probs = predict(fit.log, type = "response")
+log.pred = rep("Down", 1089)
+log.pred[log.probs > .5] = "Up"
+table(log.pred, Weekly$Direction)
+print("Overall Error Rate")
+1 - (54 + 557)/ 1089
+print("False Positive Rate")
+430/(430 + 54)
+print("TP - power")
+557/(557+48)
+print("pos. predictive value")
+557/(557+430)
+```
+a little better than random guessing
+
+d.
+
+```{r}
+test= Weekly$Year %in% c(2009, 2010)
+Weekly.test = Weekly[test, ]
+log.fit2 = glm(Direction ~ Lag2, data = Weekly, family = binomial, subset = -test)
+log.probs = predict(log.fit2, Weekly.test, type= "response")
+log.pred = rep("Down", 104)
+log.pred[log.probs > .5] = "Up"
+table(log.pred, Weekly.test$Direction)
+```
+
+e. 
+```{r}
+library(MASS)
+lda.fit = lda(Direction ~ Lag1 + Lag2 , data = Weekly, subset = -test)
+lda.fit
+```
+
+```{r}
+lda.pred = predict(lda.fit, Weekly.test)
+lda.class = lda.pred$class
+table(lda.class, Weekly.test$Direction)
+mean(lda.class == Weekly.test$Direction)
+```
+
+f.
+
+```{r}
+qda.fit = qda(Direction ~ Lag1 + Lag2, data = Weekly, subset = -test)
+qda.fit
+```
+
+```{r}
+qda.pred = predict(qda.fit, Weekly.test)
+qda.class = qda.pred$class
+table(qda.class, Weekly.test$Direction)
+mean(qda.class == Weekly.test$Direction)
+```
+
+g.
+
+```{r}
+library(class)
+train.X <- as.matrix(Weekly$Lag2[!test])
+test.X <- as.matrix(Weekly$Lag2[test])
+train.Direction <- Weekly$Direction[!test]
+set.seed(1)
+pred.knn <- knn(train.X, test.X, train.Direction, k = 1)
+table(pred.knn, Weekly.test$Direction)
+```
+i. 
+```{r}
+train.X <- as.matrix(Weekly$Lag2[!test])
+test.X <- as.matrix(Weekly$Lag2[test])
+train.Direction <- Weekly$Direction[!test]
+set.seed(1)
+pred.knn2 <- knn(train.X, test.X, train.Direction, k = 4)
+table(pred.knn2, Weekly.test$Direction)
+```
+
+## 11
+
+```{r}
+cor(Auto[, -9])
+```
+it seems mpg is correlated with cylinders, displacement, horsepower, and weight.
+
+
