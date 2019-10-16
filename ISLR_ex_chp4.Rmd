@@ -498,4 +498,69 @@ b.
 ggplot(myauto, aes(x = weight, y = mpg, size = horsepower, color = mpg01)) + geom_point()
 ```
 
+c.
+```{r}
+test.X = myauto[1:80, ]
+train.X = myauto[81:392, ]
+```
+
+d.
+```{r}
+library(MASS)
+lda.fit = lda(mpg01 ~ displacement + weight + horsepower, data = train.X)
+lda.fit
+```
+
+```{r}
+lda.pred = predict(lda.fit, test.X, type = "response")
+lda.class = lda.pred$class
+table(lda.class, test.X$mpg01)
+```
+
+e. 
+```{r}
+qda.fit = qda(mpg01 ~ displacement + weight + horsepower, data = train.X)
+qda.fit
+```
+
+```{r}
+qda.pred = predict(qda.fit, test.X , type= "response")
+qda.class = qda.pred$class
+table(qda.class, test.X$mpg01)
+```
+
+f.
+```{r}
+log.fit = glm(mpg01 ~ displacement + weight + horsepower, data = train.X, family = binomial)
+summary(log.fit)
+```
+
+```{r}
+log.probs = predict(log.fit, test.X , type= "response")
+log.pred = rep(0, 80)
+log.pred[log.probs > .5] = 1
+table(log.pred, test.X$mpg01)
+```
+
+
+g.
+
+```{r}
+library(class)
+ktrain = as.matrix(train.X[, c(5, 3, 4)])
+ktest = as.matrix(test.X[,c(5,3,4)])
+trainmpg01 = as.matrix(train.X[,10])
+k.pred = knn(ktrain, ktest, trainmpg01, k = 1)
+table(k.pred, test.X$mpg01)
+```
+
+```{r}
+k.pred = knn(ktrain, ktest, trainmpg01, k = 4)
+table(k.pred, test.X$mpg01)
+```
+
+```{r}
+k.pred = knn(ktrain, ktest, trainmpg01, k = 5)
+table(k.pred, test.X$mpg01)
+```
 
