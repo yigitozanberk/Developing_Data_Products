@@ -483,4 +483,19 @@ cor(Auto[, -9])
 ```
 it seems mpg is correlated with cylinders, displacement, horsepower, and weight.
 
+a.
+
+```{r}
+mpg01 = rep(0, 392)
+mpg01[Auto$mpg > median(Auto$mpg)] = 1
+mpg01 = as.factor(mpg01)
+summary(mpg01)
+myauto = cbind(Auto, mpg01)
+```
+
+b.
+```{r}
+ggplot(myauto, aes(x = weight, y = mpg, size = horsepower, color = mpg01)) + geom_point()
+```
+
 
