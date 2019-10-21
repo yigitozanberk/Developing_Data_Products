@@ -1,0 +1,304 @@
+---
+title: "ISLR Chapter 5"
+author: "Yigit Ozan Berk"
+date: "10/19/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Validation
+
+splitting the set of observations into training and test
+
+```{r}
+library(ISLR)
+set.seed(1)
+train = sample(392, 196)
+# select a subset of 196 observations out of the original 392 obs
+
+```
+
+fitting a linear regression model with the subset
+
+```{r}
+lm.fit = lm(mpg ~ horsepower, data = Auto, subset = train)
+```
+
+```{r}
+mean((Auto$mpg - predict(lm.fit, Auto))[-train]^2)
+#predict function to estimate the response for all 392 obs, and we use the mean function to calculate the MSE of the 196 observations in the validation set. Note that the -train index below selects only the observations that are not in the training set.
+```
+
+the estimated MSE for lm fit is 26.14
+We can use the poly() function to estimate the test error for the quadratic and cubic regressions.
+
+```{r}
+lm.fit2 = lm(mpg ~ poly(horsepower, 2), data = Auto, subset = train)
+mean((Auto$mpg - predict(lm.fit2, Auto))[-train]^2)
+lm.fit3 = lm(mpg ~ poly(horsepower, 3), data = Auto, subset = train)
+mean((Auto$mpg - predict(lm.fit3, Auto))[-train]^2)
+```
+
+If we choose a different training set, we will obtain somewhat different errors on the validation set.
+
+```{r}
+set.seed(2)
+train = sample(392, 196)
+lm.fit = lm(mpg ~ horsepower, subset = train, data = Auto)
+mean((Auto$mpg - predict(lm.fit, Auto))[-train]^2)
+lm.fit2 = lm(mpg ~ poly(horsepower, 2), data = Auto, subset = train)
+mean((Auto$mpg - predict(lm.fit2, Auto))[-train]^2)
+lm.fit3 = lm(mpg ~ poly(horsepower, 3), data = Auto, subset = train)
+mean((Auto$mpg - predict(lm.fit3, Auto))[-train]^2)
+```
+
+## LOOCV
+
+cv.glm() function is part of the boot library.
+
+```{r}
+install.packages("boot")
+```
+
+```{r}
+library(boot)
+library(ISLR)
+glm.fit = glm(mpg ~ horsepower, data = Auto)
+coef(glm.fit)
+```
+
+```{r}
+glm.fit = glm(mpg ~ horsepower, data = Auto)
+cv.err = cv.glm(Auto, glm.fit)
+cv.err$delta
+
+```
+the two number s in the delta vector contain the cross-validation results. in this case the numbers ae identical up to two decimal places, and correspond to the LOOCV statistic given in 5.1
+
+```{r}
+cv.error = rep(0, 5)
+for(i in 1:5) {
+        glm.fit = glm(mpg ~ poly(horsepower, i), data = Auto)
+        cv.error[i] = cv.glm(Auto, glm.fit)$delta[1]
+}
+cv.error
+```
+
+## k-Fold Cross-Validation
+
+cv.glm() function can also be used to implement k-fold CV. Below we use k = 10, a common choise for k.
+
+```{r}
+set.seed(17)
+cv.error.10 = rep(0, 10)
+for(i in 1:10){
+        glm.fit = glm(mpg ~ poly(horsepower, i), data = Auto)
+        cv.error.10[i] = cv.glm(Auto, glm.fit, K = 10)$delta[1]
+}
+cv.error.10
+```
+
+We still see little evidence that using cubic or higher-order polynimial terms leads to lower test error than simply using a quadratic fit.
+
+The computation time is much shorter than that of LOOCV.
+
+## The bootstrap
+
+### estimating acc of STATISTIC OF INTEREST
+Using the Portfolio data set in ISLR
+
+To illustrate the use of the bootstrap on this daya, we must forst create a function, alpha.fn() which takes as the input (X,Y) data as well as a vector indicating which observations should be used to estimate alpha. The function then outputs the estimate for alpha based on the selected observations.
+```{r}
+head(Portfolio)
+```
+
+
+```{r}
+alpha.fn = function(data, index) {
+        X = data$X[index]
+        Y = data$Y[index]
+        return((var(Y) - cov(X,Y))/(var(X)+var(Y)- 2*cov(X,Y)))
+}
+```
+
+Fot instance,   the following command tells R to estimate alpha using all 100 observations
+
+```{r}
+alpha.fn(Portfolio, 1:100)
+```
+
+The next command uses the sample() function to randomly select 100 observations from the range 1 to 100, with replacement. This is equivalent to construncting a new bootstrap dat aset and recomputing alpha based on the new data set.
+
+```{r}
+set.seed(1)
+alpha.fn(Portfolio, sample(100, 100, replace = T))
+```
+
+the boot() function automates this approach. Below R = 1,000 bootstrap estimates for alpha.
+
+```{r}
+boot(Portfolio, alpha.fn, R = 1000)
+```
+
+### estimating acc of a LINEAR REGRESSION MODEL
+
+first, the function
+
+```{r}
+boot.fn = function(data, index) return(coef(lm(mpg ~ horsepower, data = data, subset = index)))
+boot.fn(Auto, 1:392)
+```
+
+```{r}
+set.seed(1)
+boot.fn(Auto, sample(392, 392, replace = T))
+boot.fn(Auto, sample(392, 392, replace = T))
+```
+
+we use the boot() function to compute the standard errors of 1,000 bootstrap estimates for the intercept and slope terms
+
+```{r}
+boot(Auto, boot.fn, 1000)
+```
+the original model
+```{r}
+summary(lm(mpg ~ horsepower, data = Auto))$coef
+```
+
+```{r}
+boot.fn = function(data, index)
+        coefficients(lm(mpg ~ horsepower + I(horsepower ^ 2), data = data, subset = index))
+set.seed(1)
+boot(Auto, boot.fn, 1000)
+```
+```{r}
+summary(lm(mpg ~ horsepower + I(horsepower ^ 2), data = Auto))$coef
+```
+
+## Chp5 Applied ex
+
+### 5
+a.
+
+dataset = ISLR::Default
+approach = validation set
+statistic = test error of the regression model
+
+```{r}
+library(ISLR)
+set.seed(1)
+train = sample(10000, 5000)
+glm.fit = glm(default ~ income + balance, data = Default, subset = train, family = binomial)
+glm.probs = predict(glm.fit, Default[-train,])
+glm.pred = rep("No", 5000)
+glm.pred[glm.probs > .5] = "Yes"
+table(glm.pred, Default[-train,]$default)
+```
+
+c. repeat b. three times.
+
+```{r}
+set.seed(10)
+train = 5001:10000
+glm.fit = glm(default ~ income + balance, data = Default, subset = train, family = binomial)
+glm.probs = predict(glm.fit, Default[-train,])
+glm.pred = rep("No", 5000)
+glm.pred[glm.probs > .5] = "Yes"
+table(glm.pred, Default[-train,]$default)
+```
+
+```{r}
+set.seed(123)
+train = 1:5000
+glm.fit = glm(default ~ income + balance, data = Default, subset = train, family = binomial)
+glm.probs = predict(glm.fit, Default[-train,])
+glm.pred = rep("No", 5000)
+glm.pred[glm.probs > .5] = "Yes"
+table(glm.pred, Default[-train,]$default)
+```
+
+the error rate is around 2.8 %, 2.62%, and 3%.
+
+It varies depending on the validation set.
+
+
+d.
+
+```{r}
+train = 5001:10000
+glm.fit = glm(default ~ income + balance + student, data = Default, subset = train, family = binomial)
+glm.probs = predict(glm.fit, Default[-train,])
+glm.pred = rep("No", 5000)
+glm.pred[glm.probs > .5] = "Yes"
+table(glm.pred, Default[-train,]$default)
+```
+
+2.94% from 3%. The test error somewhat improved. not really noticable.
+
+### 6
+
+a.
+```{r}
+glm.fit = glm(default ~ income + balance, data = Default, family = binomial)
+summary(glm.fit)
+```
+
+b.
+```{r}
+boot.fn = function(data, index)
+        return(coef(glm(default ~ income+balance, data = Default, family = binomial, subset = index)))
+```
+
+c.
+```{r}
+boot(Default, boot.fn, 1000)
+```
+
+
+### 7
+cv.error = rep(0, 5)
+for(i in 1:5) {
+glm.fit = glm(mpg ~ poly(horsepower, i), data = Auto)
+cv.error[i] = cv.glm(Auto, glm.fit)$delta[1]
+}
+
+a.
+```{r}
+glm.fit = glm(Direction ~ Lag1 + Lag2, data = Weekly, family = binomial)
+summary(glm.fit)
+```
+
+b.
+```{r}
+train = rep(TRUE, 1089)
+train[1] = FALSE
+glm.fit2 = glm(Direction ~ Lag1 + Lag2, data = Weekly, family = binomial, subset = train)
+summary(glm.fit2)
+```
+
+c. 
+```{r}
+predict(glm.fit2, Weekly[1, ], type = "response") >0.5
+Weekly$Direction[1]
+```
+
+d.
+```{r}
+err.vect = rep(0, 1089)
+for(i in 1:1089){
+        glm.fit3 = glm(Direction ~ Lag1 + Lag2, data = Weekly[-i,], family = binomial)
+        glm.pred = predict(glm.fit3, Weekly[i,], type = "response") > .5
+        true.up = Weekly[i, ]$Direction == "Up"
+        err.vect[i] = (glm.pred != true.up)*1
+}
+```
+
+e.
+```{r}
+mean(err.vect)
+```
+
