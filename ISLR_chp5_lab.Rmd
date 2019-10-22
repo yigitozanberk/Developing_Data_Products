@@ -302,3 +302,48 @@ e.
 mean(err.vect)
 ```
 
+### 8
+a.
+```{r}
+set.seed(1)
+x = rnorm(100)
+y = x - 2*x^2 + rnorm(100)
+
+```
+
+n = 100
+p = 2 ?
+1 olmali bu ya. predictors = 1, outcome = y
+
+b.
+```{r}
+plot(x, y)
+```
+
+X is quadratically correlated with Y.
+
+c.
+```{r}
+dat = as.data.frame(cbind(x, y))
+library(boot)
+library(ISLR)
+set.seed(1)
+cv.error = rep(0, 4)
+for(i in 1:4) {
+        glm.fit = glm(y ~ poly(x, i), data = dat)
+        cv.error[i] = cv.glm(dat, glm.fit)$delta[1]
+}
+cv.error
+```
+
+d.
+```{r}
+set.seed(10)
+cv.error = rep(0, 4)
+for(i in 1:4) {
+        glm.fit = glm(y ~ poly(x, i), data = dat)
+        cv.error[i] = cv.glm(dat, glm.fit)$delta[1]
+}
+cv.error
+```
+
